@@ -590,6 +590,83 @@
     <div class="foot-brand">Pookie Bakery</div>
     <div class="foot-sub">© <span id="year"></span> جميع الحقوق محفوظة · Made with Love 🤍</div>
   </div>
+  <!-- قسم آراء وتقييمات العملاء -->
+<section id="customer-reviews" style="padding: 60px 0; background: var(--card); border-top: 1px solid var(--line); margin-top: 60px;">
+  <div class="wrap" style="max-width: 640px; margin: 0 auto; text-align: center;">
+    <div class="section-head" style="margin-bottom: 24px;">
+      <h2>آراء عملائنا</h2>
+      <span class="en-sub">Customer Reviews</span>
+      <p>شاركنا رأيك في منتجاتنا بكل حُب!</p>
+    </div>
+
+    <!-- نموذج إضافة تقييم -->
+    <form id="reviewForm" style="display: flex; flex-direction: column; gap: 14px; background: var(--bg); padding: 24px; border-radius: var(--radius-lg); border: 1px solid var(--line); text-align: right;">
+      <div class="field" style="display: flex; flex-direction: column; gap: 6px;">
+        <label for="reviewerName" style="font-size: .82rem; font-weight: 700; color: var(--ink-soft);">اسمك الكريم:</label>
+        <input type="text" id="reviewerName" required placeholder="أدخل اسمك هنا..." style="border: 1px solid var(--line-strong); border-radius: var(--radius-sm); padding: 12px 14px; background: var(--card); color: var(--ink); font-size: .92rem;">
+      </div>
+
+      <div class="field" style="display: flex; flex-direction: column; gap: 6px;">
+        <label for="reviewerText" style="font-size: .82rem; font-weight: 700; color: var(--ink-soft);">رأيك أو تقييمك:</label>
+        <textarea id="reviewerText" required placeholder="اكتب تقييمك هنا..." style="border: 1px solid var(--line-strong); border-radius: var(--radius-sm); padding: 12px 14px; background: var(--card); color: var(--ink); font-size: .92rem; min-height: 80px; resize: vertical;"></textarea>
+      </div>
+
+      <button type="submit" style="width: 100%; padding: 14px; border: none; border-radius: 99px; background: var(--ink); color: var(--cream-ink); font-weight: 700; font-size: .95px; cursor: pointer; transition: background .3s;">إرسال التقييم</button>
+    </form>
+
+    <!-- مكان عرض التقييمات -->
+    <div id="reviewsList" style="margin-top: 30px; display: flex; flex-direction: column; gap: 12px; text-align: right;">
+      <!-- ستظهر التقييمات المضافة هنا ديناميكياً -->
+    </div>
+  </div>
+</section>
+
+<!-- جافا سكريبت لحفظ وعرض التقييمات -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const reviewForm = document.getElementById('reviewForm');
+    const reviewsList = document.getElementById('reviewsList');
+
+    // استرجاع التقييمات المخزنة مسبقاً إن وجدت
+    const savedReviews = JSON.parse(localStorage.getItem('pookie_reviews')) || [];
+
+    function renderReviews() {
+      reviewsList.innerHTML = '';
+      if (savedReviews.length === 0) {
+        reviewsList.innerHTML = '<p style="color: var(--ink-faint); font-size: .9rem;">كن أول من يشاركنا رأيه!</p>';
+        return;
+      }
+      savedReviews.forEach(rev => {
+        const revCard = document.createElement('div');
+        revCard.style.cssText = 'background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 16px; box-shadow: var(--shadow-sm);';
+        revCard.innerHTML = `
+          <strong style="display: block; font-size: .95rem; color: var(--ink); margin-bottom: 4px;">${escapeHtml(rev.name)}</strong>
+          <p style="font-size: .88rem; color: var(--ink-soft); line-height: 1.6;">${escapeHtml(rev.text)}</p>
+        `;
+        reviewsList.appendChild(revCard);
+      });
+    }
+
+    function escapeHtml(text) {
+      return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    reviewForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('reviewerName').value.trim();
+      const text = document.getElementById('reviewerText').value.trim();
+
+      if (name && text) {
+        savedReviews.unshift({ name, text });
+        localStorage.setItem('pookie_reviews', JSON.stringify(savedReviews));
+        renderReviews();
+        reviewForm.reset();
+      }
+    });
+
+    renderReviews();
+  });
+</script>
 </footer>
 
 <!-- Cart Drawer -->
